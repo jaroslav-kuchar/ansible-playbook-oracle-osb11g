@@ -1,0 +1,105 @@
+# --------------------
+# Install Oracle WLS and OSB
+# --------------------
+
+# Install required packages
+- name: Install required packages
+  apt: 
+    name: "{{ item }}" 
+    state: latest
+  become: true
+  with_items:    
+    - unzip
+  when: ansible_os_family == 'Debian'
+
+# Create dirs
+- name: Create Middleware Home and temporary installation directory
+  file: 
+    state: directory 
+    path: "{{ item }}" 
+    owner: "{{ oracle_osb11g_user }}" 
+    group: "{{ oracle_osb11g_group }}"
+    mode: '0755'
+  become: true
+  with_items:
+    - "{{ oracle_osb11g_middleware_home }}"
+    - "{{ oracle_osb11g_tmp }}"
+
+# Copy WLS
+- name: Check WLS
+  stat: 
+    path: "{{ oracle_osb11g_tmp }}/{{ oracle_osb11g_wls_installer }}"
+  register: wls_copied
+- name: Copy WLS
+  copy: 
+    src: "{{ oracle_osb11g_wls_installer }}" 
+    dest: "{{ oracle_osb11g_tmp }}"
+  when: wls_copied.stat.exists == False
+
+# Copy OSB
+- name: Check OSB
+  stat: 
+    path: "{{ oracle_osb11g_tmp }}/Disk1/runInstaller"
+  register: osb_copied
+- name: Extract OSB
+  unarchive: 
+    src: "{{ oracle_osb11g_osb_installer }}" 
+    dest: "{{ oracle_osb11g_tmp }}"
+  when: osb_copied.stat.exists == False
+
+# Create silent files
+- name: Create silent files
+  template: 
+    src: "{{ item }}" 
+    dest: "{{ oracle_osb11g_tmp }}"
+  with_items:
+    - oraInst.loc
+    - wls-silent.rsp
+    - wls-silent.xml
+    - osb-silent.rsp
+
+# Install WLS
+- name: Install WLS
+  command: "java -jar {{ oracle_osb11g_tmp }}/{{ oracle_osb11g_wls_installer }} -mode=silent -silent_xml={{ oracle_osb11g_tmp }}/wls-silent.xml -responseFile={{ oracle_osb11g_tmp }}/wls-silent.rsp -Djava.security.egd=file:/dev/./urandom"
+  args:      
+    creates: '{{ oracle_osb11g_middleware_home }}/wlserver/common/bin/config.sh'
+
+# Install OSB
+- name: Install OSB
+  command: "{{ oracle_osb11g_tmp }}/Disk1/runInstaller -silent -responseFile {{ oracle_osb11g_tmp }}/osb-silent.rsp -invPtrLoc {{ oracle_osb11g_tmp }}/oraInst.loc -jreLoc {{ oracle_osb11g_java_path }} -debug -waitforcompletion"
+  args:      
+    creates: '{{ oracle_osb11g_middleware_home }}/Oracle_OSB1/common/bin/wsadmin.sh'
+
+# Copy domain template
+- name: Copy domain template
+  copy: 
+    src: mi-mdw_10.3.6.0.jar 
+    dest: "{{ oracle_osb11g_middleware_home }}"
+
+# Create domain install script
+- name: Create wls-domain file
+  template: 
+    src: wls-domain.sh 
+    dest: "{{ oracle_osb11g_middleware_home }}" 
+    mode: a+x
+
+# Create symlink
+- name: Symlink wls-domain.sh
+  become: true
+  file:
+    src: "{{ oracle_osb11g_middleware_home }}/wls-domain.sh"
+    path: "/usr/local/bin/wls-domain.sh"
+    state: link
+
+# Update owner recursively
+- name: Create Middleware Home
+  file: 
+    state: directory
+    path: "{{ item }}" 
+    owner: "{{ oracle_osb11g_user }}" 
+    group: "{{ oracle_osb11g_group }}"
+    mode: 'a+rX'
+    recurse: yes
+  become: true
+  with_items:
+    - "{{ oracle_osb11g_middleware_home }}"

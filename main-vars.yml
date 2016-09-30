@@ -1,0 +1,10 @@
+oracle_osb11g_user: 'vagrant'
+oracle_osb11g_group: 'vagrant'
+
+oracle_osb11g_middleware_home: '/usr/local/mimdw'
+oracle_osb11g_tmp: '/tmp/mimdw_inst'
+
+oracle_osb11g_java_path: '/usr/lib/jvm/java-8-oracle'
+
+oracle_osb11g_wls_installer: 'wls1036_generic.jar'
+oracle_osb11g_osb_installer: 'ofm_osb_generic_11.1.1.7.0_disk1_1of1.zip'

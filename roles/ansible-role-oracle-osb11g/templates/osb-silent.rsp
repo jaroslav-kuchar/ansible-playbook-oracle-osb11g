@@ -1,0 +1,14 @@
+[ENGINE]
+Response File Version=1.0.0.0.0
+[GENERIC]
+SKIP_SOFTWARE_UPDATES=true
+TYPICAL TYPE=false
+CUSTOM TYPE=true
+Oracle Service Bus Examples=true
+Oracle Service Bus IDE=false
+ORACLE_HOME={{ oracle_osb11g_middleware_home }}/Oracle_OSB1
+MIDDLEWARE_HOME={{ oracle_osb11g_middleware_home }}
+WL_HOME={{ oracle_osb11g_middleware_home }}/wlserver
+[SYSTEM]
+[APPLICATIONS]
+[RELATIONSHIPS]

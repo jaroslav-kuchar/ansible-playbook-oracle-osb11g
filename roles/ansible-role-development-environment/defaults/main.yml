@@ -1,0 +1,3 @@
+oracle_osb11g_user: 'vagrant'
+oracle_osb11g_group: 'vagrant'
+oracle_osb11g_middleware_home: '/usr/local/mimdw'

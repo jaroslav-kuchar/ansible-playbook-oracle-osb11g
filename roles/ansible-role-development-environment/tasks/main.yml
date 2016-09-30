@@ -1,0 +1,109 @@
+# --------------------
+# Install Development Environment
+# --------------------
+
+# Install X
+- name: Install X
+  apt: 
+    name: "{{ item }}" 
+    state: latest
+  become: true
+  with_items:
+    - xfce4
+    - virtualbox-guest-dkms
+    - virtualbox-guest-utils
+    - virtualbox-guest-x11
+    - fonts-freefont-ttf
+    - slim
+    - gnome-icon-theme-full 
+    - tango-icon-theme
+    - chromium-browser
+  when: ansible_os_family == 'Debian'
+
+# Install domain
+- name: User home
+  command: echo $HOME
+  register: user_home
+- name: Check domain
+  stat: 
+    path: "{{ user_home.stdout }}/mimdw/domains/base_domain"
+  register: is_installed_domain
+- name: Install domain
+  command: "{{ oracle_osb11g_middleware_home }}/wls-domain.sh"
+  when: is_installed_domain.stat.exists == False
+
+# Create dirs
+- name: Create Desktop
+  file: 
+    state: directory 
+    path: "{{ item }}" 
+    owner: "{{ oracle_osb11g_user }}" 
+    group: "{{ oracle_osb11g_group }}"
+  become: true
+  with_items:
+    - "{{ user_home.stdout }}/Desktop"
+
+# Eclipse
+- name: Check Eclipse tar
+  stat: 
+    path: '/tmp/Eclipse.tar.gz'
+  register: eclipse_tar_is
+- name: Check Eclipse installer
+  stat: 
+    path: '{{ role_path }}/files/Eclipse.tar.gz'
+  register: eclipse_installer_is
+- name: Check Eclipse
+  stat: 
+    path: '{{ user_home.stdout }}/Desktop/eclipse'
+  register: eclipse_is
+- name: Copy Eclipser installer
+  copy: 
+    src: Eclipse.tar.gz 
+    dest: /tmp/Eclipse.tar.gz
+  when: eclipse_installer_is.stat.exists == True and eclipse_tar_is.stat.exists == False and eclipse_is.stat.exists == False
+- name: Download Eclipse
+  get_url:
+    url: http://mirrors.nic.cz/eclipse/technology/epp/downloads/release/neon/R/eclipse-jee-neon-R-linux-gtk-x86_64.tar.gz
+    dest: /tmp/Eclipse.tar.gz
+  when: eclipse_tar_is.stat.exists == False and eclipse_installer_is.stat.exists == False and eclipse_is.stat.exists == False
+- name: Extract Eclipse
+  unarchive: 
+    src: /tmp/Eclipse.tar.gz 
+    dest: "{{ user_home.stdout }}/Desktop"
+  when: eclipse_is.stat.exists == False
+
+# SoapUI
+- name: Check SoapUI tar
+  stat: 
+    path: '/tmp/SoapUI.tar.gz'
+  register: soapui_tar_is
+- name: Check SoapUI installer
+  stat: 
+    path: '{{ role_path }}/files/SoapUI.tar.gz'
+  register: soapui_installer_is
+- name: Check SoapUI
+  stat: 
+    path: '{{ user_home.stdout }}/Desktop/SoapUI-5.2.1'
+  register: soapui_is
+- name: Copy SoapUI installer
+  copy: 
+    src: SoapUI.tar.gz 
+    dest: /tmp/SoapUI.tar.gz
+  when: soapui_installer_is.stat.exists == True and soapui_tar_is.stat.exists == False and soapui_is.stat.exists == False
+- name: Download SoapUI
+  get_url:
+    url: http://cdn01.downloads.smartbear.com/soapui/5.2.1/SoapUI-5.2.1-linux-bin.tar.gz
+    dest: /tmp/SoapUI.tar.gz
+  when: soapui_tar_is.stat.exists == False and soapui_installer_is.stat.exists == False and soapui_is.stat.exists == False
+- name: Extract SoapUI
+  unarchive: 
+    src: /tmp/SoapUI.tar.gz 
+    dest: "{{ user_home.stdout }}/Desktop"
+  when: soapui_is.stat.exists == False
+
+# Start WLS script
+- name: Start WLS script
+  template: 
+    src: start-wls.sh 
+    dest: "{{ user_home.stdout }}/Desktop/start-wls" 
+    mode: a+x

@@ -1,0 +1,2 @@
+inst_group={{ oracle_osb11g_group }}
+inventory_loc={{ oracle_osb11g_middleware_home }}/orainventory

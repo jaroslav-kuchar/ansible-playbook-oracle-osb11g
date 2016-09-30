@@ -1,0 +1,39 @@
+# --------------------
+# Install Oracle JDK for Debian/Ubuntu
+# --------------------
+- name: Install package for add-apt-repository
+  apt: 
+    name: software-properties-common 
+    state: latest
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Add Java repo
+  apt_repository: 
+    repo: "ppa:webupd8team/java"
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Accept Oracle license for Java 7 + 8
+  debconf: 
+    name: "{{ item }}" 
+    question: "shared/accepted-oracle-license-v1-1" 
+    value: "true" 
+    vtype: "select"
+  become: true
+  with_items:
+      - oracle-java7-installer
+      - oracle-java8-installer
+  when: ansible_os_family == 'Debian'
+
+- name: Install Java 7 + 8 and set Java 8 as default
+  apt: 
+    name: "{{ item }}" 
+    state: latest
+  become: true
+  with_items:
+    - oracle-java7-installer
+    - oracle-java8-installer
+    - ca-certificates
+    - oracle-java8-set-default
+  when: ansible_os_family == 'Debian'

@@ -1,0 +1,9 @@
+---
+- name: Configure Oracle Web Logic & Service Bus 11g + development environemnt
+  hosts: all
+  vars_files:
+    - main-vars.yml
+  roles:
+    - role: ansible-role-oracle-jdk
+    - role: ansible-role-oracle-osb11g
+    - role: ansible-role-development-environment
