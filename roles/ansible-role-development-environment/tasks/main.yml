@@ -107,3 +107,10 @@
     src: start-wls.sh 
     dest: "{{ user_home.stdout }}/Desktop/start-wls" 
     mode: a+x
+
+# Start Eclipse script
+- name: Start Eclipse script
+  template: 
+    src: start-eclipse.sh 
+    dest: "{{ user_home.stdout }}/Desktop/start-eclipse" 
+    mode: a+x
