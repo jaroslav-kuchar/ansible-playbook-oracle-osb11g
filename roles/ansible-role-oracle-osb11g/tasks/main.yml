@@ -10,6 +10,7 @@
   become: true
   with_items:    
     - unzip
+    - haveged
   when: ansible_os_family == 'Debian'
 
 # Create dirs
