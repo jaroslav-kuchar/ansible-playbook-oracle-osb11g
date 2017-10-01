@@ -7,6 +7,9 @@ It contains an ansible playbook for Oracle Web Logic and Oracle Service Bus 11g 
 
 - [VirtualBox](https://www.virtualbox.org/)
 - [Vagrant](https://www.vagrantup.com/)
+- [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html)
+  * Download **jdk-7u80-linux-x64.tar.gz** (Registration required)
+  * Copy the downloaded file to roles/ansible-role-oracle-jdk/files
 - [Oracle Service Bus 11gR1](http://www.oracle.com/technetwork/middleware/service-bus/downloads/index.html)
   * Download **generic** versions (Registration required)
     * Oracle WebLogic Server 11gR1 (10.3.6) + Coherence - Package Installer

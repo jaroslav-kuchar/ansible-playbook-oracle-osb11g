@@ -26,6 +26,12 @@
       - oracle-java8-installer
   when: ansible_os_family == 'Debian'
 
+- name: Copy oracle-java7-installer
+  copy: 
+    src: "jdk-7u80-linux-x64.tar.gz" 
+    dest: "/var/cache/oracle-jdk7-installer/"
+  become: true
+
 - name: Install Java 7 + 8 and set Java 8 as default
   apt: 
     name: "{{ item }}" 

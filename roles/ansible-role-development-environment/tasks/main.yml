@@ -18,6 +18,7 @@
     - gnome-icon-theme-full 
     - tango-icon-theme
     - chromium-browser
+    - file-roller
   when: ansible_os_family == 'Debian'
 
 # Install domain
